@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowForge | Agentic Workflow Builder</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1>FlowForge</h1>
+      </div>
+      
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <span class="icon">📊</span> Dashboard
+        </a>
+        <a href="#" class="nav-item" data-view="workflows">
+          <span class="icon">⚡</span> Workflows
+        </a>
+        <a href="#" class="nav-item" data-view="history">
+          <span class="icon">🕰️</span> Run History
+        </a>
+      </nav>
+
+      <div class="workflow-import-section">
+        <h3>Import Workflow</h3>
+        <textarea id="import-json" placeholder="Paste JSON here..."></textarea>
+        <button id="btn-import" class="btn btn-secondary btn-sm">Import</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard View -->
+      <section id="view-dashboard" class="view active">
+        <header class="view-header">
+          <h2>Dashboard</h2>
+          <button class="btn btn-primary" id="btn-new-workflow">
+            <span class="icon">+</span> New Workflow
+          </button>
+        </header>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Workflows</h3>
+            <div class="value" id="stat-total-workflows">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Total Runs</h3>
+            <div class="value" id="stat-total-runs">0</div>
+          </div>
+          <div class="stat-card">
+            <h3>Success Rate</h3>
+            <div class="value" id="stat-success-rate">0%</div>
+          </div>
+          <div class="stat-card">
+            <h3>Total Cost</h3>
+            <div class="value" id="stat-total-cost">$0.00</div>
+          </div>
+        </div>
+
+        <div class="recent-activity">
+          <h3>Recent Activity</h3>
+          <div class="activity-list" id="dashboard-activity-list">
+            <!-- Activity items will be injected here -->
+            <div class="empty-state">No recent activity</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workflows View -->
+      <section id="view-workflows" class="view">
+        <header class="view-header">
+          <h2>Workflows</h2>
+          <button class="btn btn-primary" id="btn-new-workflow-2">
+            <span class="icon">+</span> New Workflow
+          </button>
+        </header>
+
+        <div class="workflows-grid" id="workflows-list">
+          <!-- Workflow cards will be injected here -->
+        </div>
+      </section>
+
+      <!-- Workflow Editor View -->
+      <section id="view-editor" class="view">
+        <header class="view-header">
+          <div class="header-left">
+            <button class="btn btn-icon" id="btn-back-workflows">
+              <span class="icon">←</span>
+            </button>
+            <h2 id="editor-title">New Workflow</h2>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" id="btn-export-workflow" style="display: none;">Export JSON</button>
+            <button class="btn btn-secondary" id="btn-cancel-edit">Cancel</button>
+            <button class="btn btn-primary" id="btn-save-workflow">Save</button>
+            <button class="btn btn-success" id="btn-run-workflow" style="display: none;">
+              <span class="icon">▶</span> Run
+            </button>
+          </div>
+        </header>
+
+        <div class="editor-container">
+          <div class="workflow-meta">
+            <div class="form-group">
+              <label class="form-label">Workflow Name</label>
+              <input type="text" class="form-input" id="workflow-name" placeholder="e.g. Code Generator">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="form-input" id="workflow-description" rows="2" placeholder="Describe what this workflow does..."></textarea>
+            </div>
+          </div>
+
+          <div class="steps-container">
+            <div class="steps-header">
+              <h3>Workflow Steps</h3>
+              <button class="btn btn-secondary btn-sm" id="btn-add-step">
+                <span class="icon">+</span> Add Step
+              </button>
+            </div>
+            
+            <div class="steps-list" id="editor-steps-list">
+              <!-- Steps will be added here -->
+              <div class="empty-state">No steps yet. Add a step to begin.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Run History View -->
+      <section id="view-history" class="view">
+        <header class="view-header">
+          <h2>Run History</h2>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh-history">Refresh</button>
+        </header>
+
+        <div class="history-list" id="run-history-list">
+          <!-- Run history items will be injected here -->
+        </div>
+      </section>
+
+      <!-- Execution View -->
+      <section id="view-execution" class="view">
+        <header class="view-header">
+          <div class="header-left">
+            <button class="btn btn-icon" id="btn-back-history">
+              <span class="icon">←</span>
+            </button>
+            <h2 id="execution-title">Run #1234</h2>
+          </div>
+          <div class="run-status-badge" id="execution-status-badge">Running</div>
+        </header>
+
+        <div class="execution-stats-bar">
+          <div class="exec-stat">
+            <span class="label">Total Tokens:</span>
+            <span class="value" id="exec-tokens">0</span>
+          </div>
+          <div class="exec-stat">
+            <span class="label">Total Cost:</span>
+            <span class="value" id="exec-cost">$0.000000</span>
+          </div>
+          <div class="exec-stat">
+            <span class="label">Duration:</span>
+            <span class="value" id="exec-duration">0s</span>
+          </div>
+        </div>
+
+        <div class="execution-timeline" id="execution-steps-list">
+          <!-- Live execution steps will appear here -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Step Configuration Modal -->
+  <div class="modal" id="modal-step">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="step-modal-title">Configure Step</h3>
+        <button class="btn-close" id="btn-close-step-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Step Name</label>
+          <input type="text" class="form-input" id="step-name" placeholder="e.g. Generate Idea">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Model</label>
+          <select class="form-select" id="step-model">
+            <option value="kimi-k2p5">Kimi K2P5 (Premium)</option>
+            <option value="kimi-k2-instruct-0905" selected>Kimi K2 Instruct (Standard)</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Prompt</label>
+          <div class="help-text">Use <code>{context}</code> to insert output from the previous step.</div>
+          <textarea class="form-input code-font" id="step-prompt" rows="6" placeholder="Write your prompt here..."></textarea>
+        </div>
+        
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label class="form-label">Completion Criteria</label>
+              <select class="form-select" id="step-criteria-type">
+                <option value="always">Always Pass</option>
+                <option value="contains">Contains Text</option>
+                <option value="not_contains">Does Not Contain</option>
+                <option value="regex">Matches Regex</option>
+                <option value="json">Valid JSON</option>
+                <option value="code">Contains Code Block</option>
+                <option value="length_min">Min Length (chars)</option>
+                <option value="llm">LLM Evaluation</option>
+              </select>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group" id="group-criteria-value">
+              <label class="form-label">Criteria Value</label>
+              <input type="text" class="form-input" id="step-criteria-value" placeholder="Value to check...">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label class="form-label">Retry Limit</label>
+              <input type="number" class="form-input" id="step-retry-limit" value="3" min="1" max="10">
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label class="form-label">Context Passing Mode</label>
+              <select class="form-select" id="step-context-mode">
+                <option value="full">Full Output</option>
+                <option value="code_only">Code Blocks Only</option>
+                <option value="last_paragraph">Last Paragraph</option>
+                <option value="summary">Summary (Truncated)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-cancel-step">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-step">Save Step</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
